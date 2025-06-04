@@ -1,18 +1,18 @@
-import express from "express";
-import { body } from "express-validator";
-import userController from "../controllers/user-controller.js";
-import authMiddleware from "../middleware/auth-middleware.js";
+import express from 'express';
+import { body } from 'express-validator';
+import authController from '../controllers/auth-controller.js';
+import authMiddleware from '../middleware/auth-middleware.js';
 const Router = express.Router;
 
 export const authRouter = new Router();
 
 authRouter.post(
-  "/registration",
-  body("email").isEmail(),
-  body("password").isLength({ min: 4, max: 20 }),
-  userController.registration
+  '/registration',
+  body('email').isEmail(),
+  body('password').isLength({ min: 4, max: 20 }),
+  authController.registration
 );
-authRouter.post("/login", userController.login);
-authRouter.post("/logout", userController.logout);
-authRouter.get("/refresh", userController.refresh);
-authRouter.get("/users", authMiddleware, userController.getUsers);
+authRouter.post('/login', authController.login);
+authRouter.post('/logout', authController.logout);
+authRouter.get('/refresh', authController.refresh);
+authRouter.get('/users', authMiddleware, authController.getUsers);

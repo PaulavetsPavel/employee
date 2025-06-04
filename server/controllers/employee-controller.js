@@ -1,5 +1,5 @@
-import employeeService from "../service/employee-service.js";
-import logAction from "../utils/logger.js";
+import employeeService from '../service/employee-service.js';
+import logAction from '../utils/logger.js';
 
 class EmployeeController {
   async getEmployees(req, res) {
@@ -18,8 +18,8 @@ class EmployeeController {
       // userData = await employeeService.getAllEmployees();
 
       return res.json(userData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+    } catch (error) {
+      return res.status(500).json(error.messagee);
     }
   }
   async getEmployee(req, res) {
@@ -29,15 +29,15 @@ class EmployeeController {
       const userData = await employeeService.getEmployeeById(id);
 
       return res.json(userData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+    } catch (error) {
+      return res.status(500).json(error.messagee);
     }
   }
 
   async createEmployee(req, res) {
     try {
       const { name, position, hire_date, salary, photo_url } = req.body;
-      const created_by = req.user.id;
+      const created_by = 1;
       const employeeData = await employeeService.addEmployeeToDB(
         name,
         position,
@@ -48,13 +48,10 @@ class EmployeeController {
       );
 
       // Логирование
-      await logAction(
-        req.user.id,
-        `Added new employee with ID ${employeeData[0].id}`
-      );
+      await logAction(1, `Added new employee with ID ${employeeData[0].id}`);
       return res.json(employeeData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+    } catch (error) {
+      return res.status(500).json(error.messagee);
     }
   }
   async updateEmployee(req, res) {
@@ -72,22 +69,27 @@ class EmployeeController {
         photo_url
       );
       //Логирование
-      await logAction(req.user.id, `Updated employee with ID ${id}`);
+      await logAction(1, `Updated employee with ID ${id}`);
       return res.json(employeeData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+    } catch (error) {
+      return res.status(500).json(error.messagee);
     }
   }
   async deleteEmployee(req, res) {
     try {
       const id = req.params.id;
 
-      const employeeData = await employeeService.removeEmployeeFromDB(id);
-      // Логирование
-      await logAction(req.user.id, `Deleted employee with ID ${id}`);
-      return res.json(employeeData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+      const affectedRows = await employeeService.removeEmployeeFromDB(id);
+
+      if (affectedRows) {
+        await logAction(1, `Deleted employee with ID ${id}`);
+        return res.status(200).json(affectedRows);
+      }
+      throw new Error('Ошибка удаления');
+    } catch (error) {
+      console.log(error);
+
+      return res.status(500).json(error.messagee);
     }
   }
 }
