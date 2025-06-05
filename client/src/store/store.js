@@ -1,5 +1,5 @@
 export default class Store {
-  user = {};
+  user = null;
 
   setUser(user) {
     this.user = user;

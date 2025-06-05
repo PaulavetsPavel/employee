@@ -1,15 +1,23 @@
+import { log } from "console";
 import employeeService from "../service/employee-service.js";
 import logAction from "../utils/logger.js";
+import fs from "fs";
+import path from "path";
+// import { __dirname } from "../utils/fileUtils.js";
 
 class EmployeeController {
   async getEmployees(req, res) {
+    console.log(req.query);
+
     try {
-      const { page = 2, limit, search, sortBy } = req.query;
+      const { page = 2, limit, searchField, search, sortBy } = req.query;
       const offset = (page - 1) * limit;
       let userData;
 
-      if (search) {
+      if (searchField == "name") {
         userData = await employeeService.getEmployeeLikeName(search);
+      } else if (searchField == "position") {
+        userData = await employeeService.getEmployeeLikePosition(search);
       } else if (sortBy) {
         userData = await employeeService.getAllEmployeesSortBy(sortBy);
       } else {
@@ -17,9 +25,9 @@ class EmployeeController {
       }
       // userData = await employeeService.getAllEmployees();
 
-      return res.json(userData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+      return res.status(200).json(userData);
+    } catch (error) {
+      return res.status(500).json(error.messagee);
     }
   }
   async getEmployee(req, res) {
@@ -28,16 +36,19 @@ class EmployeeController {
 
       const userData = await employeeService.getEmployeeById(id);
 
-      return res.json(userData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+      return res.status(200).json(userData);
+    } catch (error) {
+      return res.status(500).json(error.messagee);
     }
   }
 
   async createEmployee(req, res) {
     try {
-      const { name, position, hire_date, salary, photo_url } = req.body;
-      const created_by = req.user.id;
+      const { name, position, hire_date, salary } = req.body;
+      const created_by = 1;
+
+      const photo_url = req.file ? `/uploads/${req.file.filename}` : null;
+
       const employeeData = await employeeService.addEmployeeToDB(
         name,
         position,
@@ -48,22 +59,41 @@ class EmployeeController {
       );
 
       // Логирование
-      await logAction(
-        req.user.id,
-        `Added new employee with ID ${employeeData[0].id}`
-      );
-      return res.json(employeeData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+      await logAction(1, `Added new employee with ID ${employeeData.id}`);
+      return res.status(200).json(employeeData);
+    } catch (error) {
+      return res.status(500).json(error.messagee);
     }
   }
   async updateEmployee(req, res) {
     try {
-      const { name, position, hire_date, salary, photo_url } = req.body;
-      console.log(req.body);
+      const { name, position, hire_date, salary } = req.body;
 
       const id = req.params.id;
-      const employeeData = await employeeService.editEmployeeToDB(
+
+      const employee = await employeeService.getEmployeeById(id);
+
+      if (!employee) {
+        return res.status(404).json({ error: "Сотрудник не найден." });
+      }
+
+      // Удаляем старое фото если загружаем новое
+      let photo_url = employee.photo_url;
+      if (req.file) {
+        if (employee.photo_url) {
+          const oldFilePath = path.join(
+            __dirname,
+            "../../uploads",
+            employee.photo_url.split("/").pop()
+          );
+          if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+          }
+        }
+        photo_url = `/uploads/${req.file.filename}`;
+      }
+
+      const [employeeData] = await employeeService.editEmployeeToDB(
         id,
         name,
         position,
@@ -71,23 +101,34 @@ class EmployeeController {
         salary,
         photo_url
       );
+
       //Логирование
-      await logAction(req.user.id, `Updated employee with ID ${id}`);
-      return res.json(employeeData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+      await logAction(1, `Updated employee with ID ${id}`);
+      return res.status(200).json(employeeData);
+    } catch (error) {
+      console.log(error);
+
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+      return res.status(500).json(error.messagee);
     }
   }
   async deleteEmployee(req, res) {
     try {
       const id = req.params.id;
 
-      const employeeData = await employeeService.removeEmployeeFromDB(id);
-      // Логирование
-      await logAction(req.user.id, `Deleted employee with ID ${id}`);
-      return res.json(employeeData);
-    } catch (e) {
-      return res.status(500).json(e.messagee);
+      const affectedRows = await employeeService.removeEmployeeFromDB(id);
+
+      if (affectedRows) {
+        await logAction(1, `Deleted employee with ID ${id}`);
+        return res.status(200).json(affectedRows);
+      }
+      throw new Error("Ошибка удаления");
+    } catch (error) {
+      console.log(error);
+
+      return res.status(500).json(error.messagee);
     }
   }
 }

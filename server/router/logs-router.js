@@ -1,15 +1,15 @@
-import express from 'express'
-import logController from '../controllers/log-controller.js'
-import adminMiddleware from '../middleware/admin-middleware.js'
-import authMiddleware from '../middleware/auth-middleware.js'
+import express from "express";
+import logController from "../controllers/log-controller.js";
+import adminMiddleware from "../middleware/admin-middleware.js";
+import authMiddleware from "../middleware/auth-middleware.js";
 
-const Router = express.Router
+const Router = express.Router;
 
-export const logRouter = new Router()
+export const logRouter = new Router();
 
 logRouter.get(
-	'/logs',
-	authMiddleware,
-	adminMiddleware,
-	logController.getAllLogs
-)
+  "/logs",
+  // authMiddleware,
+  // adminMiddleware,
+  logController.getAllLogs
+);

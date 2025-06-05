@@ -1,6 +1,7 @@
 import express from "express";
 
 import employeeController from "../controllers/employee-controller.js";
+import { upload } from "../utils/fileStorage.js";
 import adminMiddleware from "../middleware/admin-middleware.js";
 import authMiddleware from "../middleware/auth-middleware.js";
 
@@ -23,19 +24,21 @@ employeesRouter.get(
 
 employeesRouter.post(
   "/employees",
-  authMiddleware,
-  adminMiddleware,
+  // authMiddleware,
+  // adminMiddleware,
+  upload.single("photo"),
   employeeController.createEmployee
 );
 employeesRouter.put(
   "/employees/:id",
-  authMiddleware,
-  adminMiddleware,
+  // authMiddleware,
+  // adminMiddleware,
+  upload.single("photo"),
   employeeController.updateEmployee
 );
 employeesRouter.delete(
   "/employees/:id",
-  authMiddleware,
-  adminMiddleware,
+  // authMiddleware,
+  // adminMiddleware,
   employeeController.deleteEmployee
 );
