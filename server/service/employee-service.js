@@ -18,23 +18,35 @@ class EmployeeService {
     return employee;
   }
   async getEmployeeLikeName(name) {
-    const employee = await pool.query(`SELECT * FROM employees WHERE name LIKE '${name}'`);
+    const [employee] = await pool.query(`SELECT * FROM employees WHERE name LIKE '${name}'`);
 
-    return employee[0];
+    return employee;
+  }
+  async getEmployeeLikePosition(position) {
+    const [employee] = await pool.query(
+      `SELECT * FROM employees WHERE position LIKE '${position}'`
+    );
+
+    return employee;
   }
   async getAllEmployeesSortBy(sort) {
     const [employees] = await pool.query(`SELECT * FROM employees ORDER BY ${sort} `);
     return employees;
   }
 
-  async addEmployeeToDB(name, position, hire_date, salary, photo_url, created_by) {
-    const lastRow = await pool.query(
-      `INSERT INTO employees (name , position , hire_date, salary, photo_url, created_by  ) VALUES ('${name}', '${position}', '${hire_date}', '${salary}', '${photo_url}','${created_by}') `
-    );
+  async addEmployeeToDB(name, position, hire_date, salary, photo_url = '', created_by = 1) {
+    const query = `
+  INSERT INTO employees 
+    (name, position, hire_date, salary, photo_url, created_by) 
+  VALUES 
+    (?, ?, ?, ?, ?, ?)`;
+
+    const values = [name, position, hire_date, salary, photo_url || null, created_by];
+
+    const [{ insertId }] = await pool.query(query, values);
+
     // получение последнего добавленного пользователя из бд
-    const [addedEmployee] = await pool.query(
-      `SELECT * FROM employees WHERE id = ${lastRow[0].insertId} `
-    );
+    const [[addedEmployee]] = await pool.query(`SELECT * FROM employees WHERE id = ${insertId} `);
 
     return addedEmployee;
   }

@@ -11,7 +11,6 @@ const EmployeePageHeader = ({ currentUser }) => {
 
   const userLogout = async () => {
     const { data, status } = await AuthService.logout();
-    console.log(status === 200);
 
     if (status === 200) {
       store.setUser(null);

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Container, Card } from 'react-bootstrap';
@@ -17,6 +17,8 @@ const LIMIT = 10;
 
 const EmployeePage = () => {
   const [page, setPage] = useState(1);
+  const [showAddModal, setShowAddModal] = useState(false);
+
   const { store } = useContext(Context);
 
   const navigate = useNavigate();
@@ -39,22 +41,22 @@ const EmployeePage = () => {
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync } = useMutation({
-    mutationFn: (id) => {
-      EmployeeService.deleteEmployee(id);
-    },
+  const mutation = useMutation({
+    mutationFn: (id) => EmployeeService.deleteEmployee(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['employees', page],
-        // exact,
-        refetchType: 'all',
-      });
+      queryClient.invalidateQueries(['employees']);
+      reset();
+      onHide();
+    },
+    onError: (error) => {
+      setServerError(error.response?.data?.message);
     },
   });
 
   const deleteEmployee = async (id) => {
-    mutateAsync(id);
+    mutation.mutate(id);
   };
+
   if (!currentUser) navigate('/login');
 
   return (
@@ -67,7 +69,7 @@ const EmployeePage = () => {
       ) : (
         <main>
           {/* Админ-панель */}
-          {currentUser.role === 'admin' && <AdminPanel />}
+          {currentUser.role == 'admin' && <AdminPanel setShowAddModal={setShowAddModal} />}
 
           {/* Таблица сотрудников */}
           <Card className="mb-4 shadow-sm border-0">
@@ -78,7 +80,7 @@ const EmployeePage = () => {
               </h5>
             </Card.Header>
             <Card.Body className="p-0">
-              <EmployeeTable employees={data} deleteEmployee={deleteEmployee} />
+              {currentUser && <EmployeeTable employees={data} deleteEmployee={deleteEmployee} />}
             </Card.Body>
           </Card>
 

@@ -1,14 +1,12 @@
-import {
+import { useState } from 'react';
+import { Button, Card, Row, Col, } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import AddEmployeeForm from '../employee/forms/AddEmployeeForm';
 
-    Button,
-
-    Card,
-    Row,
-    Col,
-
-} from 'react-bootstrap';
 
 const AdminPanel = () => {
+    const [showAddModal, setShowAddModal] = useState(false);
+    const navigate = useNavigate();
     return (
         <>
 
@@ -32,7 +30,7 @@ const AdminPanel = () => {
                         <Col md="auto">
                             <Button
                                 variant="success"
-                                onClick={() => navigate("/employees/add")}
+                                onClick={() => setShowAddModal(true)}
                                 className="d-flex align-items-center"
                             >
                                 <i className="bi bi-person-plus me-2"></i>
@@ -42,6 +40,11 @@ const AdminPanel = () => {
                     </Row>
                 </Card.Body>
             </Card>
+            {/* Добавление нового сотрудника */}
+            <AddEmployeeForm
+                show={showAddModal}
+                onHide={() => setShowAddModal(false)}
+            />
         </>
     )
 }

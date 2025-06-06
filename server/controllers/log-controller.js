@@ -8,7 +8,7 @@ class LogController {
     try {
       const logsData = await logService.getAllLogsFromDB(offset, limit);
 
-      return res.json(logsData);
+      return res.status(200).json(logsData);
     } catch (error) {
       return res.status(500).json(error.messagee);
     }
