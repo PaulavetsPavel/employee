@@ -1,4 +1,3 @@
-import { log } from 'console';
 import employeeService from '../service/employee-service.js';
 import logAction from '../utils/logger.js';
 import fs from 'fs';
@@ -7,21 +6,19 @@ import path from 'path';
 
 class EmployeeController {
   async getEmployees(req, res) {
-    console.log(req.query);
-
     try {
-      const { page = 2, limit, search, sortBy } = req.query;
-      const offset = (page - 1) * limit;
-      let userData;
+      // const { page = 2, limit, search, sortBy } = req.query;
+      // const offset = (page - 1) * limit;
+      // let userData;
 
-      if (search) {
-        userData = await employeeService.getEmployeeLikeName(search);
-      } else if (sortBy) {
-        userData = await employeeService.getAllEmployeesSortBy(sortBy);
-      } else {
-        userData = await employeeService.getAllEmployeesOnPage(offset, limit);
-      }
-      // userData = await employeeService.getAllEmployees();
+      // if (search) {
+      //   userData = await employeeService.getEmployeeLikeName(search);
+      // } else if (sortBy) {
+      //   userData = await employeeService.getAllEmployeesSortBy(sortBy);
+      // } else {
+      //   userData = await employeeService.getAllEmployeesOnPage(offset, limit);
+      // }
+      const userData = await employeeService.getAllEmployees();
 
       return res.status(200).json(userData);
     } catch (error) {
@@ -42,7 +39,7 @@ class EmployeeController {
 
   async createEmployee(req, res) {
     try {
-      const { name, position, hire_date, salary } = req.body;
+      const { name, position, hire_date, salary, status, contract_end } = req.body;
       const created_by = 1;
 
       const photo_url = req.file ? `/uploads/${req.file.filename}` : null;
@@ -51,6 +48,8 @@ class EmployeeController {
         name,
         position,
         hire_date,
+        contract_end,
+        status,
         salary,
         photo_url,
         created_by
@@ -63,11 +62,13 @@ class EmployeeController {
       return res.status(500).json(error.messagee);
     }
   }
+
   async updateEmployee(req, res) {
     try {
-      const { name, position, hire_date, salary } = req.body;
+      const { name, position, hire_date, salary, status, contract_end } = req.body;
 
       const id = req.params.id;
+      console.log(req.file);
 
       const employee = await employeeService.getEmployeeById(id);
 
@@ -89,6 +90,8 @@ class EmployeeController {
           }
         }
         photo_url = `/uploads/${req.file.filename}`;
+      } else {
+        photo_url = '';
       }
 
       const [employeeData] = await employeeService.editEmployeeToDB(
@@ -96,6 +99,8 @@ class EmployeeController {
         name,
         position,
         hire_date,
+        contract_end,
+        status,
         salary,
         photo_url
       );

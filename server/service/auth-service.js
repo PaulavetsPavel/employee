@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js';
+import bcrypt from 'bcrypt';
 // import bcrypt from 'bcrypt';
 import tokenService from './token-service.js';
 
@@ -11,11 +12,12 @@ class AuthService {
       throw new Error('Пользователь уже существует. Пожалуйста авторизируйтесь.');
     }
 
-    // const hashPassword = await bcrypt.hash(password, 3);
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 — "соль" (число итераций)
+
     // добавление пользователя в бд
     const [lastRow] = await pool.query(
       'INSERT INTO `users` (`email` , `password_hash` , `role` ) VALUES (?, ?, ?) ',
-      [email, password, 'user']
+      [email, hashedPassword, 'user']
     );
     // получение последнего добавленного пользователя из бд
     const [[addedUser]] = await pool.query('SELECT * FROM users WHERE id = ? ', [lastRow.insertId]);
@@ -34,8 +36,7 @@ class AuthService {
     if (!user) {
       throw new Error("Пользователь с таким Email'ом не найден. Пожалуйста зарегистрируйтесь. ");
     }
-    // const isPassEqual = await bcrypt.compare(password, user[0].password_hash);
-    const isPassEqual = password == user.password_hash;
+    const isPassEqual = await bcrypt.compare(password, user.password_hash);
 
     if (!isPassEqual) {
       throw new Error('Неверный пароль.');

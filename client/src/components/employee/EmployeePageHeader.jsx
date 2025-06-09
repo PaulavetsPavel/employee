@@ -2,10 +2,11 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
 import { Context } from '../../main';
+import { observer } from 'mobx-react-lite';
 
 import { Navbar, Button, Badge } from 'react-bootstrap';
 
-const EmployeePageHeader = ({ currentUser }) => {
+const EmployeePageHeader = () => {
   const { store } = useContext(Context);
   const navigate = useNavigate();
 
@@ -14,19 +15,21 @@ const EmployeePageHeader = ({ currentUser }) => {
 
     if (status === 200) {
       store.setUser(null);
+      store.setAuth(false);
       navigate('/login');
     }
     console.log(data.message);
   };
+
   return (
     <>
       <Navbar bg="light" expand="lg" className="mb-4 p-3 shadow-sm rounded">
         <Navbar.Brand className="me-auto d-flex align-items-center">
           <i className="bi bi-person-circle fs-4 me-2"></i>
           <div>
-            <h5 className="mb-0">{currentUser.email}</h5>
-            <Badge bg={currentUser.role === 'admin' ? 'primary' : 'secondary'} className="mt-1">
-              {currentUser.role}
+            <h5 className="mb-0">{store.user.email}</h5>
+            <Badge bg={store.user.role === 'admin' ? 'primary' : 'secondary'} className="mt-1">
+              {store.user.role}
             </Badge>
           </div>
         </Navbar.Brand>
@@ -39,4 +42,4 @@ const EmployeePageHeader = ({ currentUser }) => {
   );
 };
 
-export default EmployeePageHeader;
+export default observer(EmployeePageHeader);

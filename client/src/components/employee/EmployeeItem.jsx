@@ -1,12 +1,16 @@
 import { useContext } from 'react';
 import { Context } from '../../main';
+import { observer } from 'mobx-react-lite';
 import { Badge } from 'react-bootstrap';
 import AdminButtonGroup from '../admin/AdminButtonGroup';
+
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const EmployeeItem = ({ employee, deleteEmployee }) => {
   const { store } = useContext(Context);
 
-  const currentUser = store.getUser();
+  const photoSrc = employee.photo_url ? `${baseURL}${employee.photo_url}` : '/NotPhoto.png';
+  console.log(employee.photo_url);
 
   return (
     <>
@@ -19,6 +23,29 @@ const EmployeeItem = ({ employee, deleteEmployee }) => {
         </Badge>
       </td>
       <td className="align-middle text-center">
+        {new Date(employee.hire_date).toLocaleDateString('ru-RU')}
+      </td>
+      <td className="align-middle text-center">
+        {employee.contract_end ? new Date(employee.contract_end).toLocaleDateString('ru-RU') : '—'}
+      </td>
+
+      <td className="align-middle text-center">
+        <Badge
+          bg={
+            employee.status === 'работает'
+              ? 'success'
+              : employee.status === 'уволен'
+              ? 'secondary'
+              : employee.status === 'в отпуске'
+              ? 'warning'
+              : employee.status === 'в декрете'
+              ? 'info'
+              : 'primary'
+          }>
+          {employee.status}
+        </Badge>
+      </td>
+      <td className="align-middle text-center">
         {new Intl.NumberFormat('ru-RU', {
           style: 'currency',
           currency: 'BYN',
@@ -26,23 +53,20 @@ const EmployeeItem = ({ employee, deleteEmployee }) => {
         }).format(employee.salary)}
       </td>
       <td className="align-middle text-center">
-        {new Date(employee.hire_date).toLocaleDateString('ru-RU')}
-      </td>
-      <td className="align-middle text-center">
         <img
-          src={employee.photo_url ? employee.photo_url : '/notPhoto.png'}
+          src={photoSrc}
           alt={employee.name}
           className="rounded-circle"
           style={{
             width: '40px',
             height: '40px',
-            objectFit: 'container',
+            objectFit: 'cover',
             border: '2px solid #dee2e6',
           }}
         />
       </td>
       <td className="align-middle text-center">
-        {currentUser?.role === 'admin' ? (
+        {store.user?.role === 'admin' ? (
           <AdminButtonGroup deleteEmployee={deleteEmployee} id={employee.id} />
         ) : (
           <p>Только для администраторов</p>
@@ -52,4 +76,4 @@ const EmployeeItem = ({ employee, deleteEmployee }) => {
   );
 };
 
-export default EmployeeItem;
+export default observer(EmployeeItem);

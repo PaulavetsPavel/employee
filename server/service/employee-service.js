@@ -34,14 +34,33 @@ class EmployeeService {
     return employees;
   }
 
-  async addEmployeeToDB(name, position, hire_date, salary, photo_url = '', created_by = 1) {
+  async addEmployeeToDB(
+    name,
+    position,
+    hire_date,
+    contract_end,
+    status,
+    salary,
+    photo_url = '',
+    created_by = 1
+  ) {
     const query = `
   INSERT INTO employees 
-    (name, position, hire_date, salary, photo_url, created_by) 
+    (name, position, hire_date,contract_end,
+        status, salary, photo_url, created_by) 
   VALUES 
-    (?, ?, ?, ?, ?, ?)`;
+    (?, ?, ?, ?, ?, ?,?,?)`;
 
-    const values = [name, position, hire_date, salary, photo_url || null, created_by];
+    const values = [
+      name,
+      position,
+      hire_date,
+      contract_end,
+      status,
+      salary,
+      photo_url || null,
+      created_by,
+    ];
 
     const [{ insertId }] = await pool.query(query, values);
 
@@ -51,9 +70,10 @@ class EmployeeService {
     return addedEmployee;
   }
 
-  async editEmployeeToDB(id, name, position, hire_date, salary, photo_url) {
+  async editEmployeeToDB(id, name, position, hire_date, contract_end, status, salary, photo_url) {
     const lastRow = await pool.query(
-      `UPDATE employees SET name='${name}' , position='${position}' , hire_date='${hire_date}', salary=${salary}, photo_url='${photo_url}' WHERE id=${id}`
+      `UPDATE employees SET name='${name}' , position='${position}' , hire_date='${hire_date}',contract_end='${contract_end}',
+        status='${status}', salary=${salary}, photo_url='${photo_url}' WHERE id=${id}`
     );
 
     const updatedEmployee = await pool.query(`SELECT * FROM employees WHERE id = ${id}`);

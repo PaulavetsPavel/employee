@@ -1,5 +1,6 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 import AuthService from '../services/AuthService';
 import { Context } from '../main';
 
@@ -29,22 +30,38 @@ const LoginPage = () => {
       return;
     }
 
-    setIsLoading(true);
-
     try {
       const { data, status } = await AuthService.login({ email, password });
 
       if (status === 200 && data.user) {
         store.setUser(data.user);
-        navigate('/employee');
-        // alert('Login successful! (check console)');
+        store.setAuth(true);
+        console.log(store.isAuth);
       }
     } catch (error) {
       setError(error.response.data);
     } finally {
-      setIsLoading(false);
+      store.setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const check = async () => {
+      await store.checkAuth();
+      console.log('checkAuth завершён', store.isAuth);
+    };
+
+    check();
+  }, []);
+
+  useEffect(() => {
+    console.log('Auth статус изменился:', store.isAuth);
+
+    if (store.isAuth) {
+      console.log('Переход на /employee');
+      navigate('/employee');
+    }
+  }, [store.isAuth]);
 
   return (
     <Container
@@ -80,7 +97,7 @@ const LoginPage = () => {
             </Form.Group>
 
             <Button variant="primary" type="submit" className="w-100 mb-3" disabled={isLoading}>
-              {isLoading ? 'Входим...' : 'Войти'}
+              {store.isLoading ? 'Входим...' : 'Войти'}
             </Button>
 
             <div className="text-center">
@@ -96,4 +113,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default observer(LoginPage);
