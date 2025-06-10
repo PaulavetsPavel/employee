@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import EmployeePage from './pages/EmployeePage';
 import LogsPage from './pages/LogsPage';
+import EmployeeProfile from './components/employee/EmployeeProfile';
 
 const App = () => {
   const { store } = useContext(Context);
@@ -18,6 +19,7 @@ const App = () => {
         path="/employee"
         element={store.isAuth ? <EmployeePage /> : <Navigate to="/login" />}
       />
+      <Route path="/employee/:id" element={<EmployeeProfile />} />
       <Route path="/logs" element={store.isAuth ? <LogsPage /> : <Navigate to="/login" />} />
       <Route path="/" element={<LoginPage />} />
     </Routes>

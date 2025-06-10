@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { Context } from '../../main';
+import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { Badge } from 'react-bootstrap';
 import AdminButtonGroup from '../admin/AdminButtonGroup';
@@ -10,12 +11,13 @@ const EmployeeItem = ({ employee, deleteEmployee }) => {
   const { store } = useContext(Context);
 
   const photoSrc = employee.photo_url ? `${baseURL}${employee.photo_url}` : '/NotPhoto.png';
-  console.log(employee.photo_url);
 
   return (
     <>
-      <td className="align-middle ">
-        <strong>{employee.name}</strong>
+      <td className="align-middle">
+        <Link to={`/employee/${employee.id}`} className="text-decoration-none fw-bold">
+          {employee.name}
+        </Link>
       </td>
 
       <td className="align-middle text-center">

@@ -6,14 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import EmployeeService from '../services/EmployeeService';
 import { Context } from '../main';
-import EmployeePageHeader from '../components/employee/EmployeePageHeader';
-import AdminPanel from '../components/admin/AdminPanel';
-import PaginationComponent from '../components/PaginationComponent';
 
 import SpinnerComponent from '../components/SpinnerComponent';
+import AdminPanel from '../components/admin/AdminPanel';
+import EmployeePageHeader from '../components/employee/EmployeePageHeader';
 import EmployeeTable from '../components/employee/EmployeeTable';
 import SearchEmployeeElement from '../components/employee/SearchEmployeeElement';
 import SortEmployeeElement from '../components/employee/SortEmployeeElement';
+import PaginationComponent from '../components/PaginationComponent';
 import BirthdayToast from '../components/BirthdayToast';
 
 const LIMIT = 10;

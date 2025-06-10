@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Button, Modal, Spinner, Alert } from 'react-bootstrap';
 import EmployeeService from '../../../services/EmployeeService';
 import { useForm } from 'react-hook-form';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export const AddEmployeeForm = ({ show, onHide }) => {
   const queryClient = useQueryClient();
@@ -33,11 +33,18 @@ export const AddEmployeeForm = ({ show, onHide }) => {
   const onSubmit = (data) => {
     const formData = new FormData();
     formData.append('name', data.name);
+    formData.append('birth_date', data.birthDate);
+    formData.append('department', data.department);
     formData.append('position', data.position);
     formData.append('hire_date', data.hireDate);
     formData.append('contract_end', data.contractEnd);
     formData.append('status', data.status);
     formData.append('salary', data.salary);
+    formData.append('vacation_start', data.vacationStart);
+    formData.append('vacation_end', data.vacationEnd);
+    formData.append('education', data.education);
+    formData.append('passport_info', data.passportInfo);
+    formData.append('registration_address', data.registrationAddress);
     if (data.photo[0]) formData.append('photo', data.photo[0]);
 
     mutation.mutate(formData);
@@ -61,6 +68,37 @@ export const AddEmployeeForm = ({ show, onHide }) => {
             />
             <Form.Control.Feedback type="invalid">{errors.name?.message}</Form.Control.Feedback>
           </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Дата рождения *</Form.Label>
+            <Form.Control
+              type="date"
+              isInvalid={!!errors.birthDate}
+              {...register('birthDate', { required: 'Обязательное поле' })}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.birthDate?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Отдел *</Form.Label>
+            <Form.Select
+              {...register('department', { required: 'Выберите отдел' })}
+              isInvalid={!!errors.department}>
+              <option value="">Выберите отдел</option>
+              <option value="HR">Отдел кадров</option>
+              <option value="IT">IT-отдел</option>
+              <option value="FIN">Финансовый отдел</option>
+              <option value="MKT">Маркетинг</option>
+              <option value="ADM">Администрация</option>
+              <option value="SALE">Продажи</option>
+              <option value="LOG">Логистика</option>
+              <option value="LEG">Юридический отдел</option>
+              <option value="DEV">Разработка</option>
+            </Form.Select>
+            <Form.Control.Feedback type="invalid">
+              {errors.department?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Должность *</Form.Label>
@@ -70,6 +108,19 @@ export const AddEmployeeForm = ({ show, onHide }) => {
               {...register('position', { required: 'Обязательное поле' })}
             />
             <Form.Control.Feedback type="invalid">{errors.position?.message}</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Образование</Form.Label>
+            <Form.Control type="text" {...register('education')} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Паспортные данные</Form.Label>
+            <Form.Control type="text" {...register('passportInfo')} />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Адрес прописки</Form.Label>
+            <Form.Control type="text" {...register('registrationAddress')} />
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -112,6 +163,16 @@ export const AddEmployeeForm = ({ show, onHide }) => {
               })}
             />
             <Form.Control.Feedback type="invalid">{errors.salary?.message}</Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Отпуск: с</Form.Label>
+            <Form.Control type="date" {...register('vacationStart')} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>по</Form.Label>
+            <Form.Control type="date" {...register('vacationEnd')} />
           </Form.Group>
 
           <Form.Group className="mb-3">

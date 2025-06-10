@@ -39,9 +39,23 @@ class EmployeeController {
 
   async createEmployee(req, res) {
     try {
-      const { name, position, hire_date, salary, status, contract_end } = req.body;
-      const created_by = 1;
+      const {
+        name,
+        position,
+        hire_date,
+        contract_end,
+        status,
+        salary,
+        birth_date,
+        vacation_start,
+        vacation_end,
+        education,
+        passport_info,
+        registration_address,
+        department,
+      } = req.body;
 
+      const created_by = 1;
       const photo_url = req.file ? `/uploads/${req.file.filename}` : null;
 
       const employeeData = await employeeService.addEmployeeToDB(
@@ -51,24 +65,45 @@ class EmployeeController {
         contract_end,
         status,
         salary,
+        birth_date,
+        vacation_start,
+        vacation_end,
+        education,
+        passport_info,
+        registration_address,
+        department,
         photo_url,
         created_by
       );
 
-      // Логирование
-      await logAction(1, `Added new employee with ID ${employeeData.id}`);
+      await logAction(created_by, `Добавлен сотрудник с ID ${employeeData.id}`);
+
       return res.status(200).json(employeeData);
     } catch (error) {
-      return res.status(500).json(error.messagee);
+      console.error(error);
+      return res.status(500).json({ message: error.message || 'Ошибка сервера' });
     }
   }
 
   async updateEmployee(req, res) {
     try {
-      const { name, position, hire_date, salary, status, contract_end } = req.body;
+      const {
+        name,
+        position,
+        hire_date,
+        contract_end,
+        status,
+        salary,
+        birth_date,
+        vacation_start,
+        vacation_end,
+        education,
+        passport_info,
+        registration_address,
+        department,
+      } = req.body;
 
       const id = req.params.id;
-      console.log(req.file);
 
       const employee = await employeeService.getEmployeeById(id);
 
@@ -97,11 +132,18 @@ class EmployeeController {
       const [employeeData] = await employeeService.editEmployeeToDB(
         id,
         name,
+        birth_date,
+        department,
         position,
+        salary,
+        status,
         hire_date,
         contract_end,
-        status,
-        salary,
+        vacation_start,
+        vacation_end,
+        education,
+        passport_info,
+        registration_address,
         photo_url
       );
 

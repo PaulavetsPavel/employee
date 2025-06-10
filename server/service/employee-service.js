@@ -14,7 +14,7 @@ class EmployeeService {
   }
 
   async getEmployeeById(id) {
-    const [employee] = await pool.query(`SELECT * FROM employees WHERE id = ${id}  `);
+    const [[employee]] = await pool.query(`SELECT * FROM employees WHERE id = ${id}  `);
     return employee;
   }
   async getEmployeeLikeName(name) {
@@ -36,38 +36,63 @@ class EmployeeService {
 
   async addEmployeeToDB(
     name,
-    birth_data,
     position,
     hire_date,
     contract_end,
     status,
     salary,
+    birth_date,
+    vacation_start,
+    vacation_end,
+    education,
+    passport_info,
+    registration_address,
+    department,
     photo_url = '',
     created_by = 1
   ) {
     const query = `
-  INSERT INTO employees 
-    (name, birth_data, position, hire_date,contract_end,
-        status, salary, photo_url, created_by) 
-  VALUES 
-    (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-    const values = [
+    INSERT INTO employees (
       name,
-      birth_data,
       position,
       hire_date,
       contract_end,
       status,
       salary,
+      birth_date,
+      vacation_start,
+      vacation_end,
+      education,
+      passport_info,
+      registration_address,
+      department,
+      photo_url,
+      created_by
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+    const values = [
+      name,
+      position,
+      hire_date,
+      contract_end,
+      status,
+      salary,
+      birth_date,
+      vacation_start,
+      vacation_end,
+      education,
+      passport_info,
+      registration_address,
+      department,
       photo_url || null,
       created_by,
     ];
 
     const [{ insertId }] = await pool.query(query, values);
 
-    // получение последнего добавленного пользователя из бд
-    const [[addedEmployee]] = await pool.query(`SELECT * FROM employees WHERE id = ${insertId} `);
+    const [[addedEmployee]] = await pool.query(`SELECT * FROM employees WHERE id = ?`, [insertId]);
 
     return addedEmployee;
   }
@@ -75,17 +100,26 @@ class EmployeeService {
   async editEmployeeToDB(
     id,
     name,
-    birth_data,
+    birth_date,
+    department,
     position,
+    salary,
+    status,
     hire_date,
     contract_end,
-    status,
-    salary,
+    vacation_start,
+    vacation_end,
+    education,
+    passport_info,
+    registration_address,
     photo_url
   ) {
     const lastRow = await pool.query(
-      `UPDATE employees SET name='${name}','birth_data=${birth_data}' position='${position}' , hire_date='${hire_date}',contract_end='${contract_end}',
-        status='${status}', salary=${salary}, photo_url='${photo_url}' WHERE id=${id}`
+      `UPDATE employees SET name='${name}', birth_date='${birth_date}', department='${department}', position='${position}',
+      salary='${salary}', status='${status}', hire_date='${hire_date}', contract_end='${contract_end}',
+      vacation_start='${vacation_start}', vacation_end='${vacation_end}', education='${education}',
+      passport_info='${passport_info}', registration_address='${registration_address}', photo_url='${photo_url}'
+      WHERE id=${id}`
     );
 
     const updatedEmployee = await pool.query(`SELECT * FROM employees WHERE id = ${id}`);
