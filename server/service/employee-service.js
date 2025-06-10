@@ -36,6 +36,7 @@ class EmployeeService {
 
   async addEmployeeToDB(
     name,
+    birth_data,
     position,
     hire_date,
     contract_end,
@@ -46,13 +47,14 @@ class EmployeeService {
   ) {
     const query = `
   INSERT INTO employees 
-    (name, position, hire_date,contract_end,
+    (name, birth_data, position, hire_date,contract_end,
         status, salary, photo_url, created_by) 
   VALUES 
-    (?, ?, ?, ?, ?, ?,?,?)`;
+    (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
       name,
+      birth_data,
       position,
       hire_date,
       contract_end,
@@ -70,9 +72,19 @@ class EmployeeService {
     return addedEmployee;
   }
 
-  async editEmployeeToDB(id, name, position, hire_date, contract_end, status, salary, photo_url) {
+  async editEmployeeToDB(
+    id,
+    name,
+    birth_data,
+    position,
+    hire_date,
+    contract_end,
+    status,
+    salary,
+    photo_url
+  ) {
     const lastRow = await pool.query(
-      `UPDATE employees SET name='${name}' , position='${position}' , hire_date='${hire_date}',contract_end='${contract_end}',
+      `UPDATE employees SET name='${name}','birth_data=${birth_data}' position='${position}' , hire_date='${hire_date}',contract_end='${contract_end}',
         status='${status}', salary=${salary}, photo_url='${photo_url}' WHERE id=${id}`
     );
 

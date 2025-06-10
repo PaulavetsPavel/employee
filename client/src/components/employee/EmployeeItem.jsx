@@ -17,6 +17,10 @@ const EmployeeItem = ({ employee, deleteEmployee }) => {
       <td className="align-middle ">
         <strong>{employee.name}</strong>
       </td>
+
+      <td className="align-middle text-center">
+        {employee.birth_date ? new Date(employee.birth_date).toLocaleDateString('ru-RU') : '—'}
+      </td>
       <td className="align-middle text-center">
         <Badge bg="info" className="me-1">
           {employee.position}

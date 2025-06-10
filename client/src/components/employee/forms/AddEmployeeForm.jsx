@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Form, Button, Modal, Spinner, Alert } from 'react-bootstrap';
 import EmployeeService from '../../../services/EmployeeService';
 import { useForm } from 'react-hook-form';
+import { ToastContainer, toast } from 'react-toastify';
 
 export const AddEmployeeForm = ({ show, onHide }) => {
   const queryClient = useQueryClient();
@@ -21,9 +22,11 @@ export const AddEmployeeForm = ({ show, onHide }) => {
       queryClient.invalidateQueries(['employees']);
       reset();
       onHide();
+      toast.success('Сотрудник успешно добавлен! ✅');
     },
     onError: (error) => {
       setServerError(error.response?.data?.message || 'Ошибка при создании сотрудника');
+      toast.error('❌ Ошибка при создании сотрудника');
     },
   });
 

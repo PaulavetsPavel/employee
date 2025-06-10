@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { observer } from 'mobx-react-lite';
 import { Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-
+import { ToastContainer, toast } from 'react-toastify';
 import EmployeeService from '../services/EmployeeService';
 import { Context } from '../main';
 import EmployeePageHeader from '../components/employee/EmployeePageHeader';
@@ -12,6 +12,9 @@ import PaginationComponent from '../components/PaginationComponent';
 
 import SpinnerComponent from '../components/SpinnerComponent';
 import EmployeeTable from '../components/employee/EmployeeTable';
+import SearchEmployeeElement from '../components/employee/SearchEmployeeElement';
+import SortEmployeeElement from '../components/employee/SortEmployeeElement';
+import BirthdayToast from '../components/BirthdayToast';
 
 const LIMIT = 10;
 
@@ -116,6 +119,36 @@ const EmployeePage = () => {
     setPage(1);
   }, [searchField]);
 
+  // показать уведомление если завтра у сотрудника день рождения
+  useEffect(() => {
+    if (!data) return;
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const format = (dateStr) => {
+      const date = new Date(dateStr);
+      return `${date.getDate()}-${date.getMonth() + 1}`;
+    };
+
+    const tomorrowStr = `${tomorrow.getDate()}-${tomorrow.getMonth() + 1}`;
+
+    data.forEach((employee) => {
+      if (!employee.birth_date) return;
+
+      const birthDayMonth = format(employee.birth_date);
+
+      if (birthDayMonth === tomorrowStr) {
+        toast(({ closeToast }) => <BirthdayToast name={employee.name} closeToast={closeToast} />, {
+          autoClose: false,
+          closeOnClick: false,
+          draggable: false,
+        });
+      }
+    });
+  }, [data]);
+
   if (!store.isAuth) navigate('/login');
 
   return (
@@ -132,52 +165,20 @@ const EmployeePage = () => {
 
           <div className="d-flex flex-wrap justify-content-between align-items-center">
             {/* Блок поиска */}
-            <div className="d-flex align-items-center gap-2">
-              <span className="fw-semibold text-primary d-flex align-items-center">
-                <i className="bi bi-search me-1"></i> Поиск
-              </span>
-
-              <input
-                type="text"
-                className="form-control"
-                placeholder={`Поиск по ${searchField === 'name' ? 'имени' : 'должности'}`}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ minWidth: '300px', flexGrow: 1 }}
-              />
-
-              <select
-                className="form-select"
-                value={searchField}
-                onChange={(e) => setSearchField(e.target.value)}>
-                <option value="name">Имя</option>
-                <option value="position">Должность</option>
-              </select>
-            </div>
+            <SearchEmployeeElement
+              searchTerm={searchTerm}
+              searchField={searchField}
+              setSearchTerm={setSearchTerm}
+              setSearchField={setSearchField}
+            />
 
             {/* Блок сортировки */}
-            <div className="d-flex align-items-center gap-2">
-              <span className="fw-semibold text-primary d-flex align-items-center">
-                <i className="bi bi-funnel me-1"></i> Сортировка
-              </span>
-
-              <select
-                className="form-select"
-                value={sortField}
-                onChange={(e) => setSortField(e.target.value)}>
-                <option value="name">Имя</option>
-                <option value="salary">Зарплата</option>
-                <option value="hire_date">Дата приёма</option>
-              </select>
-
-              <select
-                className="form-select"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}>
-                <option value="asc">↑ По возрастанию</option>
-                <option value="desc">↓ По убыванию</option>
-              </select>
-            </div>
+            <SortEmployeeElement
+              sortField={sortField}
+              sortOrder={sortOrder}
+              setSortField={setSortField}
+              setSortOrder={setSortOrder}
+            />
           </div>
 
           {/* Таблица сотрудников */}
@@ -205,6 +206,17 @@ const EmployeePage = () => {
           </div>
         </main>
       )}
+      <ToastContainer
+        position="top-right" // где будет показываться
+        autoClose={1000} // через сколько мс закрывать
+        hideProgressBar={false} // показывать прогресс-бар
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Container>
   );
 };

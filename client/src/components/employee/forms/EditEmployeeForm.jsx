@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Button, Form, Modal, Spinner, Alert, Image } from 'react-bootstrap';
 import EmployeeService from '../../../services/EmployeeService';
+import { ToastContainer, toast } from 'react-toastify';
 
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -62,9 +63,11 @@ export const EditEmployeeForm = ({ employeeId, show, onHide }) => {
       queryClient.invalidateQueries(['employees']);
       queryClient.invalidateQueries(['employee', employeeId]);
       onHide();
+      toast.success('Изменения успешно сохранены! ✏️');
     },
     onError: (error) => {
       setServerError(error.response?.data?.error || 'Ошибка при обновлении');
+      toast.error('❌ Ошибка при обновлении сотрудника');
     },
   });
 

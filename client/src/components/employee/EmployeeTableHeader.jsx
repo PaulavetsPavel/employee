@@ -8,6 +8,9 @@ const EmployeeTableHeader = () => {
           <i className="bi bi-person me-2"></i>Имя
         </th>
         <th className="text-center">
+          <i className="bi bi-cake me-2"></i>Дата рождения
+        </th>
+        <th className="text-center">
           <i className="bi bi-briefcase me-2"></i>Должность
         </th>
         <th className="text-center">
