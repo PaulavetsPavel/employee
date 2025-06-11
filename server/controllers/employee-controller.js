@@ -104,29 +104,25 @@ class EmployeeController {
       } = req.body;
 
       const id = req.params.id;
-
       const employee = await employeeService.getEmployeeById(id);
 
       if (!employee) {
         return res.status(404).json({ error: 'Сотрудник не найден.' });
       }
 
-      // Удаляем старое фото если загружаем новое
+      // Фотография
       let photo_url = employee.photo_url;
+
       if (req.file) {
-        if (employee.photo_url) {
-          const oldFilePath = path.join(
-            __dirname,
-            '../../uploads',
-            employee.photo_url.split('/').pop()
-          );
+        // Удаляем старое фото
+        if (photo_url) {
+          const oldFilePath = path.join(__dirname, '../../uploads', photo_url.split('/').pop());
           if (fs.existsSync(oldFilePath)) {
             fs.unlinkSync(oldFilePath);
           }
         }
+        // Устанавливаем новое фото
         photo_url = `/uploads/${req.file.filename}`;
-      } else {
-        photo_url = '';
       }
 
       const [employeeData] = await employeeService.editEmployeeToDB(
@@ -144,21 +140,20 @@ class EmployeeController {
         education,
         passport_info,
         registration_address,
-        photo_url
+        photo_url // ← сохраняем либо старое, либо новое
       );
 
-      //Логирование
-      await logAction(1, `Updated employee with ID ${id}`);
+      await logAction(1, `Обновлены данные сотрудника ID ${id}`);
       return res.status(200).json(employeeData);
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       if (req.file) {
-        fs.unlinkSync(req.file.path);
+        fs.unlinkSync(req.file.path); // если ошибка — удалим временный файл
       }
-      return res.status(500).json(error.messagee);
+      return res.status(500).json({ message: error.message || 'Ошибка сервера' });
     }
   }
+
   async deleteEmployee(req, res) {
     try {
       const id = req.params.id;

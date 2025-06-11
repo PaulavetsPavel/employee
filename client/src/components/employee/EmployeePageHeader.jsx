@@ -4,7 +4,7 @@ import AuthService from '../../services/AuthService';
 import { Context } from '../../main';
 import { observer } from 'mobx-react-lite';
 
-import { Navbar, Button, Badge } from 'react-bootstrap';
+import { Navbar, Button, Badge, Nav } from 'react-bootstrap';
 
 const EmployeePageHeader = () => {
   const { store } = useContext(Context);
@@ -23,8 +23,8 @@ const EmployeePageHeader = () => {
 
   return (
     <>
-      <Navbar bg="light" expand="lg" className="mb-4 p-3 shadow-sm rounded">
-        <Navbar.Brand className="me-auto d-flex align-items-center">
+      <Navbar bg="light" expand="lg" className="mb-4 p-3 shadow-sm rounded justify-content-between">
+        <Navbar.Brand className="d-flex align-items-center">
           <i className="bi bi-person-circle fs-4 me-2"></i>
           <div>
             <h5 className="mb-0">{store.user.email}</h5>
@@ -33,6 +33,17 @@ const EmployeePageHeader = () => {
             </Badge>
           </div>
         </Navbar.Brand>
+
+        {/* Центрированная кнопка */}
+        <Button
+          variant="outline-primary"
+          onClick={() => navigate('/vacations')}
+          className="mx-auto"
+          style={{ minWidth: '200px' }}>
+          🏖 График отпусков
+        </Button>
+
+        {/* Выход */}
         <Button variant="outline-danger" onClick={userLogout} className="d-flex align-items-center">
           <i className="bi bi-box-arrow-right me-2"></i>
           Выйти

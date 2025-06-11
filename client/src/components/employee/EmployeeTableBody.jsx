@@ -8,7 +8,7 @@ const EmployeeTableBody = ({ employees, deleteEmployee }) => {
         {employees.length ? (
           employees.map((employee) => (
             <tr key={employee.id}>
-              <EmployeeItem employee={employee} deleteEmployee={deleteEmployee} />
+              <EmployeeItem employee={employee} />
             </tr>
           ))
         ) : (

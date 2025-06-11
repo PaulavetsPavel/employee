@@ -1,6 +1,8 @@
 // pages/EmployeeProfile.jsx
+import { useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { Context } from '../../main';
 import {
   Container,
   Row,
@@ -14,10 +16,12 @@ import {
 } from 'react-bootstrap';
 
 import EmployeeService from '../../services/EmployeeService';
+import AdminButtonGroup from '../admin/AdminButtonGroup';
 
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const EmployeeProfile = () => {
+  const { store } = useContext(Context);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -127,7 +131,8 @@ const EmployeeProfile = () => {
           </Row>
         </Card.Body>
       </Card>
-      <div className="d-flex justify-content-end mt-4">
+      <div className="d-flex justify-content-around mt-4">
+        {store.user?.role === 'admin' && <AdminButtonGroup id={employee.id} />}
         <Button variant="secondary" onClick={() => navigate('/employee')}>
           Закрыть
         </Button>

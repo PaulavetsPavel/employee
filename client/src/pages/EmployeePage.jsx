@@ -48,20 +48,6 @@ const EmployeePage = () => {
     queryFn: () => getEmployees(),
   });
 
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (id) => EmployeeService.deleteEmployee(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['employees']);
-      reset();
-      onHide();
-    },
-    onError: (error) => {
-      setServerError(error.response?.data?.message);
-    },
-  });
-
   const filteredEmployees = useMemo(() => {
     if (!data) return [];
 
@@ -105,10 +91,6 @@ const EmployeePage = () => {
     const endIndex = startIndex + LIMIT;
     return filteredEmployees.slice(startIndex, endIndex);
   }, [filteredEmployees, page]);
-
-  const deleteEmployee = async (id) => {
-    mutation.mutate(id);
-  };
 
   useEffect(() => {
     setPage(1);
@@ -190,9 +172,7 @@ const EmployeePage = () => {
               </h5>
             </Card.Header>
             <Card.Body className="p-0">
-              {store.user && (
-                <EmployeeTable employees={paginatedEmployees} deleteEmployee={deleteEmployee} />
-              )}
+              {store.user && <EmployeeTable employees={paginatedEmployees} />}
             </Card.Body>
           </Card>
 

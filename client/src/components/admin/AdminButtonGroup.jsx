@@ -1,15 +1,25 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import EmployeeService from '../../services/EmployeeService';
 
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { EditEmployeeForm } from '../employee/forms/EditEmployeeForm';
 
-const AdminButtonGroup = ({ deleteEmployee, id }) => {
+const AdminButtonGroup = ({ id }) => {
+  const navigate = useNavigate();
   const [editEmployeeId, setEditEmployeeId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
   const handleEdit = (id) => {
     setEditEmployeeId(id);
     setShowEditModal(true);
+  };
+
+  const deleteEmployee = async (id) => {
+    const res = await EmployeeService.deleteEmployee(id);
+    if (res.status == 200) {
+      navigate('/employee');
+    }
   };
 
   return (
@@ -21,7 +31,8 @@ const AdminButtonGroup = ({ deleteEmployee, id }) => {
           title="Редактировать"
           className="px-3"
           onClick={() => handleEdit(id)}>
-          <i className="bi bi-pencil"></i>
+          Редактировать
+          <i className="bi bi-pencil ms-3"></i>
         </Button>
         <Button
           variant="outline-danger"
@@ -29,7 +40,8 @@ const AdminButtonGroup = ({ deleteEmployee, id }) => {
           onClick={() => deleteEmployee(id)}
           title="Удалить"
           className="px-3">
-          <i className="bi bi-trash"></i>
+          Удалить
+          <i className="bi bi-trash ms-3"></i>
         </Button>
       </ButtonGroup>
       <EditEmployeeForm

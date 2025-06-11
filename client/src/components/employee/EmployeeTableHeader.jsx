@@ -16,9 +16,7 @@ const EmployeeTableHeader = () => {
         <th className="text-center">
           <i className="bi bi-calendar-event me-2"></i>Дата приёма
         </th>
-        <th className="text-center">
-          <i className="bi bi-calendar-x me-2"></i>Окончание контракта
-        </th>
+
         <th className="text-center">
           <i className="bi bi-info-circle me-2"></i>Статус
         </th>
@@ -27,9 +25,6 @@ const EmployeeTableHeader = () => {
         </th>
         <th className="text-center">
           <i className="bi bi-image me-2"></i>Фото
-        </th>
-        <th className="text-center">
-          <i className="bi bi-gear me-2"></i>Действия
         </th>
       </tr>
     </thead>

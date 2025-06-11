@@ -31,9 +31,6 @@ const EmployeeItem = ({ employee, deleteEmployee }) => {
       <td className="align-middle text-center">
         {new Date(employee.hire_date).toLocaleDateString('ru-RU')}
       </td>
-      <td className="align-middle text-center">
-        {employee.contract_end ? new Date(employee.contract_end).toLocaleDateString('ru-RU') : '—'}
-      </td>
 
       <td className="align-middle text-center">
         <Badge
@@ -70,13 +67,6 @@ const EmployeeItem = ({ employee, deleteEmployee }) => {
             border: '2px solid #dee2e6',
           }}
         />
-      </td>
-      <td className="align-middle text-center">
-        {store.user?.role === 'admin' ? (
-          <AdminButtonGroup deleteEmployee={deleteEmployee} id={employee.id} />
-        ) : (
-          <p>Только для администраторов</p>
-        )}
       </td>
     </>
   );
